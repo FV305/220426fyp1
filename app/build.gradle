@@ -169,6 +169,21 @@ dependencies {
     //nutrient get picture
     implementation 'com.squareup.picasso:picasso:2.5.2'
 
+    //mongodb database (Retrofit)
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-rxjava2:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.1.0'
+
+    //mongodb database (RxJava)
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
+
+    //mongodb database (Material Edit Text)
+    implementation 'com.rengwuxian.materialedittext:library:2.1.4'
+
+    //mongodb database (Material Styled Dialog)
+    implementation 'com.github.javiersantos:MaterialStyledDialogs:2.1'
+
 }
 configurations {
     // Resolves dependency conflict caused by some dependencies use

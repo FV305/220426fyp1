@@ -15,10 +15,19 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.fyp_app.Retrofit.IMyService;
+import com.example.fyp_app.Retrofit.RetrofitClient;
 import com.example.fyp_app.ui.login.LoginActivity;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
 
 public class CreateAcc extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private Spinner body_part_spinner;
@@ -27,6 +36,18 @@ public class CreateAcc extends AppCompatActivity implements AdapterView.OnItemSe
     private ImageButton btn_male,btn_female;
     private boolean isPressed = true;
     //private ListView genderList;
+
+    //database
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    IMyService iMyService;
+
+    //database
+    @Override
+    protected void onStop(){
+        compositeDisposable.clear();
+        super.onStop();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -34,13 +55,17 @@ public class CreateAcc extends AppCompatActivity implements AdapterView.OnItemSe
 
         body_part_spinner = findViewById(R.id.body_part_spinner);
         body_part_spinner.setOnItemSelectedListener(this);
-        name_text = (EditText)findViewById(R.id.user_name);
-        email_text = (EditText)findViewById(R.id.user_email);
-        pw_text = (EditText)findViewById(R.id.user_password);
+        name_text = (EditText)findViewById(R.id.create_name);
+        email_text = (EditText)findViewById(R.id.create_email);
+        pw_text = (EditText)findViewById(R.id.create_password);
         btn_male = findViewById(R.id.btn_male);
         btn_female = findViewById(R.id.btn_female);
         Button btn_signup = (Button) findViewById(R.id.btn_signup);
         TextView btn_gotoLogin = (TextView)findViewById(R.id.btn_gotoLogin);
+
+        //database
+        Retrofit retrofitClient = RetrofitClient.getInstance();
+        iMyService = retrofitClient.create(IMyService.class);
 
         String[] bodyPart = getResources().getStringArray(R.array.body_part);
         ArrayAdapter adapter = new ArrayAdapter(this,
@@ -48,7 +73,7 @@ public class CreateAcc extends AppCompatActivity implements AdapterView.OnItemSe
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         body_part_spinner.setAdapter(adapter);
 
-        btn_signup.setOnClickListener(new View.OnClickListener() {
+        /*btn_signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 user_name = name_text.getText().toString();
@@ -59,7 +84,18 @@ public class CreateAcc extends AppCompatActivity implements AdapterView.OnItemSe
                     //next page
                 }
             }
+        });*/
+
+        btn_signup = (Button) findViewById(R.id.btn_signup);
+        btn_signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                registerUser(name_text.getText().toString(),
+                        email_text.getText().toString(),
+                        pw_text.getText().toString());
+            }
         });
+
         btn_gotoLogin.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
@@ -124,5 +160,32 @@ public class CreateAcc extends AppCompatActivity implements AdapterView.OnItemSe
             btn_female.setBackgroundResource(R.drawable.btn_circle_selected);
             btn_male.setBackgroundResource(R.drawable.btn_circle);
         }
+    }
+
+    private void registerUser (String name, String email, String password){
+        if(TextUtils.isEmpty(name))
+        {
+            Toast.makeText(this,"Name cannot be null or empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(email))
+        {
+            Toast.makeText(this,"Email cannot be null or empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(password))
+        {
+            Toast.makeText(this,"Password cannot be null or empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        compositeDisposable.add(iMyService.loginUser(email,password)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String response) throws Exception {
+                        Toast.makeText(CreateAcc.this, "" + response, Toast.LENGTH_SHORT).show();
+                    }
+                }));
     }
 }
