@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.example.fyp_app.ui.login.LoginActivity;
 
 public class trainingVideo extends AppCompatActivity {
 

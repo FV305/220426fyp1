@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.fyp_app.ui.home.HomeFragment;
-import com.example.fyp_app.ui.login.LoginActivity;
 
 public class turn_on_notifi extends AppCompatActivity {
 
